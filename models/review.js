@@ -6,15 +6,24 @@ const reviewSchema = new mongoose.Schema({
   count: Number,
   results: [
     {
-      review_id: Number,
+      review_id: {
+        type: Number,
+        unique: true
+      },
       rating: Number,
       summary: String,
       recommend: Boolean,
-      response: String,
+      response: {
+        type: String,
+        default: null
+      },
       body: String,
       date: Date,
       reviewer_name: String,
-      helpfulness: Number, // put req in here
+      helpfulness: {
+        type: Number,
+        default: 0
+      }, // put req in here
       photos: [{
         id: Number,
         url: String

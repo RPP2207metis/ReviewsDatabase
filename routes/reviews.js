@@ -47,9 +47,10 @@ router.post('/', async (req, res) => {
     // const posted = Review.updateOne({ product: submitted.product_id }, { $push: { rating: submitted.rating, summary: submitted.summary, body: submitted.body, recommend: submitted.recommend, name: submitted.name, email: submitted.email } });
     Review.findOne({ product: submitted.product_id })
       .then((result) => {
-        const newRating = (parseInt(result.ratings[submitted.rating]) + 1).toString();
+        // const newRating = (parseInt(result.ratings[submitted.rating]) + 1).toString();
+        const newRating = parseInt(result.ratings[submitted.rating]) + 1;
         const newRatingKey = 'ratings.' + submitted.rating;
-        const newRec = (parseInt(result.recommended[submitted.recommend]) + 1).toString();
+        const newRec = parseInt(result.recommended[submitted.recommend]) + 1; // interesting I don't need it to be a string?
         const newRecKey = 'recommended.' + submitted.recommend;
 
         console.log("🚀 ~ file: reviews.js:51 ~ .then ~ newRating", newRating, newRatingKey);
