@@ -10,4 +10,10 @@ const db = mongoose.connection;
 db.on('error', (error) => console.error(error));
 db.once('open', () => console.log('Connection to Database Established!'));
 
+app.use(express.json());
+
+const reviewsRouter = require('./routes/reviews.js');
+
+app.use('/reviews', reviewsRouter);
+
 app.listen(process.env.PORT, () => console.log(`Server on localhost ${process.env.PORT}...`));

@@ -260,7 +260,8 @@ const reviewSchema = new Schema({
         "photos": [{
             "id": Number,
             "url": String
-          }]
+          }],
+        "reported": Boolean // default false
       }
     ]
   }
@@ -322,9 +323,9 @@ this is the incoming review:  {
 [
   {
     product: '71705',
-    page: Number,
+    page: 1,
     count: 5,
-    results: [ [Object], [Object], [Object] ]
+    results: []
   },
 
 
