@@ -18,6 +18,7 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module'
   },
+  ignorePatterns: ["mockData.js"],
   rules: {
     semi: [2, "always"],
     quotes: "off",

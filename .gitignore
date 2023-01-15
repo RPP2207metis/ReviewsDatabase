@@ -19,6 +19,7 @@ bower_components
 .npm
 
 # Optional eslint cache
+.eslintrc.js
 .eslintcache
 
 # Optional REPL history
