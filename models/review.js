@@ -14,14 +14,47 @@ const reviewSchema = new mongoose.Schema({
       body: String,
       date: Date,
       reviewer_name: String,
-      helpfulness: Number, // put in here
+      helpfulness: Number, // put req in here
       photos: [{
         id: Number,
         url: String
       }],
-      reported: Boolean // default false
+      reported: {
+        type: Boolean,
+        default: false // default false
+      }
+
     }
-  ]
+  ],
+  ratings: { // default don't send if empty
+    0: String,
+    1: String,
+    2: String,
+    3: String,
+    4: String
+  },
+  recommended: {
+    false: String,
+    true: String
+  },
+  characteristics: { // default don't send if empty
+    Size: {
+      id: Number,
+      value: String
+    },
+    Width: {
+      id: Number,
+      value: String
+    },
+    Comfort: {
+      id: Number,
+      value: String
+    },
+    Quality: {
+      id: Number,
+      value: String
+    }
+  }
 });
 
 module.exports = mongoose.model('Review', reviewSchema);
