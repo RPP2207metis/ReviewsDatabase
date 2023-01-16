@@ -54,7 +54,7 @@ router.post('/', async (req, res) => {
         const newRecKey = 'recommended.' + submitted.recommend;
 
         console.log("🚀 ~ file: reviews.js:51 ~ .then ~ newRating", newRating, newRatingKey);
-        Review.updateOne({ product: submitted.product_id }, { $set: { [newRatingKey]: newRating, [newRecKey]: newRec } })
+        Review.updateOne({ product: submitted.product_id }, { $set: { [newRatingKey]: newRating, [newRecKey]: newRec }, $inc: { count: 1 } })
           .then((updated) => {
             res.send(updated);
           });

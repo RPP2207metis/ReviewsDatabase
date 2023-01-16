@@ -12,77 +12,138 @@ db.once('open', () => console.log('connected DB in seed file...'));
 
 const jsonData = [];
 
-const productIdSaved = [];
+const productIdSaved = {};
 
-for (const keyCol in excelData.data) {
-  const dataObj = excelData.data[keyCol];
-  const review_id = dataObj.A;
-  const product_id = dataObj.B;
-  const rating = dataObj.C;
-  const date = dataObj.D;
-  const summary = dataObj.E;
-  const body = dataObj.F;
-  const recommend = dataObj.G;
-  const reported = dataObj.H;
-  const reviewer_name = dataObj.I;
-  const reviewer_email = dataObj.J;
-  const response = dataObj.K;
-  const helpfulness = dataObj.L;
-  const photos = [{
-    id: 1,
-    url: 'http://res.cloudinary.com/djfpzruso/image/upload/v1673118844/r63e0zgpunosamkw2nap.jpg'
-  }];
-  console.log("🚀 ~ file: initialSeeding.js:13 ~ product_id", product_id);
-  if (!productIdSaved[product_id - 1]) {
-    productIdSaved.push(product_id);
-    console.log("productIdSaved", productIdSaved)
+importData();
 
-    // if the product id is not saved
-    const jsonMongo = {
-      product: product_id,
-      page: 1,
-      count: 1,
-      results: [
-        {
-          review_id: review_id,
-          rating: rating,
-          summary: summary,
-          recommend: recommend,
-          response: response,
-          body: body,
-          date: date,
-          reviewer_name: reviewer_name,
-          helpfulness: helpfulness,
-          photos: photos
-        }
-      ],
-      ratings: {
-        1: rating === 1 ? '1' : '0',
-        2: rating === 2 ? '1' : '0',
-        3: rating === 3 ? '1' : '0',
-        4: rating === 4 ? '1' : '0',
-        5: rating === 5 ? '1' : '0'
-      },
-      recommended: {
-        false: recommend === false ? '1' : '0',
-        true: recommend === true ? '1' : '0'
-      },
-      characteristics: {},
-      reported: reported
-    };
+async function importData () {
+  for (const keyCol in excelData.data) {
+    const dataObj = excelData.data[keyCol];
+    const review_id = dataObj.A;
+    const product_id = dataObj.B;
+    const rating = dataObj.C;
+    const date = dataObj.D;
+    const summary = dataObj.E;
+    const body = dataObj.F;
+    const recommend = dataObj.G;
+    const reported = dataObj.H;
+    const reviewer_name = dataObj.I;
+    const reviewer_email = dataObj.J;
+    const response = dataObj.K;
+    const helpfulness = dataObj.L;
+    const photos = [{
+      id: 1,
+      url: 'url.com'
+    }];
 
-    const newReview = new Review(jsonMongo);
-    newReview.save((err) => {
-      if (err) {
-        console.log('!!! ERROR Saving new review in Mongo: ', err);
+    // console.log("🚀 ~ file: initialSeeding.js:13 ~ product_id", product_id);
+
+    if (!productIdSaved[product_id]) {
+      // if the product id is not saved, need to create a new object for it in DB.
+      // Will only work if seeded from 1. TODO: Make this less brittle.
+      productIdSaved[product_id] = true;
+
+      const jsonMongo = {
+        product: product_id,
+        page: 1,
+        count: 1,
+        results: [
+          {
+            review_id,
+            rating,
+            summary,
+            recommend,
+            response,
+            body,
+            date,
+            reviewer_name,
+            helpfulness,
+            photos,
+            reported
+          }
+        ],
+        ratings: {
+          1: rating === 1 ? '1' : '0',
+          2: rating === 2 ? '1' : '0',
+          3: rating === 3 ? '1' : '0',
+          4: rating === 4 ? '1' : '0',
+          5: rating === 5 ? '1' : '0'
+        },
+        recommended: {
+          false: recommend === false ? '1' : '0',
+          true: recommend === true ? '1' : '0'
+        },
+        characteristics: {}
+      };
+
+      const newReview = new Review(jsonMongo);
+
+      try {
+        const done = await newReview.save();
+        console.log("saved new product ID: ", product_id);
+      } catch (err) {
+        console.error(err);
       }
-    });
-    // update ratings with number rating after
 
-  } else {
-    console.log('else : updates to exisiting schema in mongo')
-    // else (id is saved)
-    // updates to exisiting schema in mongo
+    } else {
+
+      const productIdString = await product_id.toString();
+      // console.log('Found product ID : Updating exisiting schema in mongo', productIdString, typeof productIdString);
+
+      try {
+        // If Product Id is found and we just need to update it
+        const updated = await Review.findOneAndUpdate({ product: productIdString }, { $inc: { count: 1 } }, { new: true })
+          .then( async (result) => {
+            console.log("Product Id is found : Update!", product_id);
+            const oldRating = result.ratings[rating];
+            const newRating = await Number(oldRating) + 1;
+            // const keyRating = "ratings." + rating;
+            const newRec = await Number(result.recommended[recommend]) + 1;
+            // const keyRec = "recommended." + recommend;
+            // const newReview = {
+            //   review_id: review_id,
+            //   rating: rating,
+            //   summary: summary,
+            //   recommend: recommend,
+            //   response: response,
+            //   body: body,
+            //   date: date,
+            //   reviewer_name: reviewer_name,
+            //   helpfulness: helpfulness,
+            //   photos: photos
+            // };
+
+            await Review.updateOne({ product: productIdString }, {
+              $set: {
+                ["ratings." + rating]: newRating,
+                ["recommended." + recommend]: newRec
+              },
+              $push: {
+                results: {
+                  review_id,
+                  rating,
+                  summary,
+                  recommend,
+                  response,
+                  body,
+                  date,
+                  reviewer_name,
+                  helpfulness,
+                  photos,
+                  reported
+                }
+              }
+            })
+              .then((resultUpdated) => console.log())
+              .catch((err) => console.error(err));
+          })
+          .catch((err) => console.error(err));
+      } catch (err) {
+        console.error(err);
+      }
+      // else (id is saved)
+      // updates to exisiting schema in mongo
+    }
   }
 }
 

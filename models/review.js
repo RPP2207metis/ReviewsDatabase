@@ -29,8 +29,7 @@ const reviewSchema = new mongoose.Schema({
         url: String
       }],
       reported: {
-        type: Boolean,
-        default: false // default false
+        type: Boolean
       }
 
     }
@@ -63,9 +62,6 @@ const reviewSchema = new mongoose.Schema({
       id: Number,
       value: String
     }
-  },
-  reported: {
-    type: Boolean
   }
 });
 
