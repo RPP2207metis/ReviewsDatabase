@@ -32,7 +32,9 @@ router.get('/meta/:id', async (req, res) => {
       delete result.product;
       return result;
     });
+
     res.json(metaData);
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

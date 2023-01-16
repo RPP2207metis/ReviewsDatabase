@@ -20,6 +20,7 @@ module.exports = {
   },
   ignorePatterns: ["mockData.js"],
   rules: {
+    "padded-blocks": "off",
     semi: [2, "always"],
     quotes: "off",
     "jest/no-disabled-tests": "warn",

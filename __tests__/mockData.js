@@ -301,7 +301,7 @@ const metaSchema = new Schema({
 }
 
 
-// POST INCOMING
+// POST INCOMING (send in data like this)
 
 this is the incoming review:  {
   product_id: 71705,
@@ -311,14 +311,40 @@ this is the incoming review:  {
   recommend: true,
   name: 'test',
   email: 'test@test.com',
-  photos: [],
+  photos: ['http://res.cloudinary.com/djfpzruso/image/upload/v1673118844/r63e0zgpunosamkw2nap.jpg'],
   characteristics: { '240611': 3, '240612': 1, '240613': 3, '240614': 3 }
 }
 
+this is the another review:  {
+  product_id: 71705,
+  rating: 1,
+  summary: 'not good',
+  body: "They hurt my feet a lot. But that's good because I'm in very sunny spots",
+  recommend: true,
+  name: 'asdf',
+  email: 'test@test.com',
+  photos: [],
+  characteristics: { '240611': 1, '240612': 1, '240613': 1, '240614': 1 }
+}
+converting to mongoose strictQuery
+{product: submitted.product_id,
+
+  rating: submitted.rating,
+  summary: submitted.summary,
+  body: submitted.body,
+  recommend: submitted.recommend,
+  name: submitted.name, email: submitted.email
+}
+
+photos: submitted.photos, characteristics: submitted.characteristics
 
 
+will need to create
 
-// GET REQUEST
+review_id, response(?)
+
+
+// GET REQUEST RESPONSE FROM DATABASE (need to get data back like this)
 
 [
   {
@@ -332,7 +358,7 @@ this is the incoming review:  {
 
   {
     product_id: '71705',
-    ratings: { '1': '1', '2': '2', '3': '1', '5': '2' },
+    ratings: { '1': '1', '2': '2', '3': '1', '4': '2', '5': '2' },
     recommended: { false: '1', true: '5' },
     characteristics: {
       Size: [Object],
@@ -342,3 +368,59 @@ this is the incoming review:  {
     }
   }
 ]
+
+
+Inside Mongo:
+{
+    product: '71705',
+    page: 1,
+    count: 5,
+    results: [
+      {
+        review_id: 1278259,
+        rating: 4,
+        summary: 'summary',
+        recommend: true,
+        response: null,
+        body: 'rjirhturhrudhrtifhdijeiejirjifrjdirjirtjdfijdijdijed',
+        date: '2023-01-07T00:00:00.000Z',
+        reviewer_name: 'tvo',
+        helpfulness: 0,
+        photos: [
+          {
+            id: 2457050,
+            url: 'http://res.cloudinary.com/djfpzruso/image/upload/v1673118844/r63e0zgpunosamkw2nap.jpg'
+          }
+        ]
+      }, ...
+    ],
+    ratings: { // default don't send if empty
+      0: String,
+      1: String,
+      2: String,
+      3: String,
+      4: String
+    },
+    recommended: {
+      false: String,
+      true: String
+    },
+    characteristics: { // default don't send if empty
+      Size: {
+        id: Number,
+        value: String
+      },
+      Width: {
+        id: Number,
+        value: String
+      },
+      Comfort: {
+        id: Number,
+        value: String
+      },
+      Quality: {
+        id: Number,
+        value: String
+      }
+    }
+  }

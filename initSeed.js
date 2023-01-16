@@ -1,23 +1,26 @@
 const mongoose = require('mongoose');
 const Review = require('./models/review.js');
-const excelData = require('./xlsx.js');
-// const connection = require('./index.js');
-// console.log("🚀 ~ file: server.js:5 ~ excelData", excelData.headers, excelData.data);
+const excelData = require('./seedData/xlsxReviewMain.js');
+const excelDataPhoto = require('./seedData/xlsxPhoto.js');
+// console.log("🚀 ~ file: initSeed.js:5 ~ excelDataPhoto", excelDataPhoto.headersPhoto, excelDataPhoto.dataPhoto);
 
-mongoose.set('strictQuery');
+mongoose.set('strictQuery', true);
 mongoose.connect('mongodb://localhost/reviewsSDC');
 const db = mongoose.connection;
 db.on('error', (err) => console.error(err));
 db.once('open', () => console.log('connected DB in seed file...'));
 
-const jsonData = [];
+const productIdSaved = {}; // For logic of saving new or updating in Mongo
 
-const productIdSaved = {};
+const photoAllArr = excelDataPhoto.dataPhoto;
 
 importData();
 
 async function importData () {
+  // console.log("inside importData()", excelData.data);
   for (const keyCol in excelData.data) {
+
+    // console.log("🚀 ~ file: initSeed.js:21 ~ importData ~ keyCol", keyCol)
     const dataObj = excelData.data[keyCol];
     const review_id = dataObj.A;
     const product_id = dataObj.B;
@@ -31,16 +34,19 @@ async function importData () {
     const reviewer_email = dataObj.J;
     const response = dataObj.K;
     const helpfulness = dataObj.L;
-    const photos = [{
-      id: 1,
-      url: 'url.com'
-    }];
 
-    // console.log("🚀 ~ file: initialSeeding.js:13 ~ product_id", product_id);
+    const photosForCurrentReview = photoAllArr.filter((photoUploaded) => {
+      return photoUploaded.B === review_id;
+    }).map((filteredEach) => {
+      filteredEach.id = filteredEach.A;
+      filteredEach.url = filteredEach.C;
+      return filteredEach;
+    });
+
+    const photos = photosForCurrentReview;
 
     if (!productIdSaved[product_id]) {
       // if the product id is not saved, need to create a new object for it in DB.
-      // Will only work if seeded from 1. TODO: Make this less brittle.
       productIdSaved[product_id] = true;
 
       const jsonMongo = {
@@ -93,7 +99,7 @@ async function importData () {
       try {
         // If Product Id is found and we just need to update it
         const updated = await Review.findOneAndUpdate({ product: productIdString }, { $inc: { count: 1 } }, { new: true })
-          .then( async (result) => {
+          .then(async (result) => {
             console.log("Product Id is found : Update!", product_id);
             const oldRating = result.ratings[rating];
             const newRating = await Number(oldRating) + 1;
@@ -141,13 +147,10 @@ async function importData () {
       } catch (err) {
         console.error(err);
       }
-      // else (id is saved)
-      // updates to exisiting schema in mongo
+
     }
   }
 }
-
-
 
 //   A: 'id = dataObj.
 //   B: 'product_id',

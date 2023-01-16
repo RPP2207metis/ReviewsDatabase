@@ -1,9 +1,10 @@
 const XLSX = require("xlsx");
 const workbook = XLSX.readFile("/Users/admin/Documents/SDC\ Data\ and\ Docs/reviews-30.csv");
-const sheetnamNameList = workbook.SheetNames; // sheetnamNameList =[ 'Sheet1' ] // getting as Sheet1
+const sheetNameListReviews = workbook.SheetNames; // sheetNameListReviews =[ 'Sheet1' ] // getting as Sheet1
 
-sheetnamNameList.forEach(function (sheetIndividual) {
-  const worksheet = workbook.Sheets[sheetIndividual]; // *.Sheets ('Sheet Name') to access the data
+sheetNameListReviews.forEach(function (sheetNameIndividual) {
+  console.log('inside main!');
+  const worksheet = workbook.Sheets[sheetNameIndividual]; // *.Sheets ('Sheet Name') to access the data
   // worksheet is a giant object = { A1: { t: 's', v: 'id' }, etc...)
 
   const headers = {};
