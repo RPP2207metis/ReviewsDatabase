@@ -36,17 +36,17 @@ const reviewSchema = new mongoose.Schema({
     }
   ],
   ratings: { // default don't send if empty
-    0: String,
     1: String,
     2: String,
     3: String,
-    4: String
+    4: String,
+    5: String
   },
   recommended: {
     false: String,
     true: String
   },
-  characteristics: { // default don't send if empty
+  characteristics: {
     Size: {
       id: Number,
       value: String
@@ -63,6 +63,9 @@ const reviewSchema = new mongoose.Schema({
       id: Number,
       value: String
     }
+  },
+  reported: {
+    type: Boolean
   }
 });
 
