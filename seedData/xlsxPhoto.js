@@ -1,5 +1,7 @@
 const XLSX = require("xlsx");
-const photoWorkBook = XLSX.readFile("/Users/admin/Documents/SDC\ Data\ and\ Docs/reviews_photos_test.csv");
+require('buffer').constants.MAX_STRING_LENGTH = Infinity;
+const photoWorkBook = XLSX.readFile("/Users/admin/Documents/SDC\ Data\ and\ Docs/reviews_photos.csv");
+// const photoWorkBook = XLSX.readFile("/Users/admin/Documents/SDC\ Data\ and\ Docs/reviews_photos_test.csv");
 const sheetNameListPhotos = photoWorkBook.SheetNames;
 
 sheetNameListPhotos.forEach((sheetNameIndividual) => {

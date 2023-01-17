@@ -1,5 +1,8 @@
 const XLSX = require("xlsx");
-const workbook = XLSX.readFile("/Users/admin/Documents/SDC\ Data\ and\ Docs/reviews-30.csv");
+
+require('buffer').constants.MAX_STRING_LENGTH = Infinity;
+const workbook = XLSX.readFile("/Users/admin/Documents/SDC\ Data\ and\ Docs/reviews.csv");
+// const workbook = XLSX.readFile("/Users/admin/Documents/SDC\ Data\ and\ Docs/reviews-30.csv");
 const sheetNameListReviews = workbook.SheetNames; // sheetNameListReviews =[ 'Sheet1' ] // getting as Sheet1
 
 sheetNameListReviews.forEach(function (sheetNameIndividual) {
@@ -40,5 +43,7 @@ sheetNameListReviews.forEach(function (sheetNameIndividual) {
   data.shift();
   data.shift();
   // console.log("headers:", headers, " data:", data);
+  console.log("Testing...");
+
   module.exports = { headers, data };
 });
