@@ -23,7 +23,7 @@ const reviewSchema = new mongoose.Schema({
       helpfulness: {
         type: Number,
         default: 0
-      }, // put req in here
+      },
       photos: [{
         id: Number,
         url: String
@@ -31,7 +31,6 @@ const reviewSchema = new mongoose.Schema({
       reported: {
         type: Boolean
       }
-
     }
   ],
   ratings: { // default don't send if empty
