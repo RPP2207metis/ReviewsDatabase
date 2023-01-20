@@ -1,8 +1,7 @@
 require('buffer').constants.MAX_STRING_LENGTH = Infinity;
 const mongoose = require('mongoose');
 const Review = require('./models/review.js');
-// const Review = require('./models/reviewMimport.js');
-const excelDataPhoto = require('./seedData/xlsxPhoto.js');
+const excelDataPhoto = require('./seedData/xlsxChar.js');
 
 // console.log("🚀 ~ file: initSeed.js:5 ~ excelDataPhoto", excelDataPhoto.headersPhoto, excelDataPhoto.dataPhoto);
 mongoose.set('strictQuery', true);
@@ -10,7 +9,7 @@ mongoose.set('strictQuery', true);
 mongoose.connect('mongodb://localhost/cows');
 const db = mongoose.connection;
 db.on('error', (err) => console.error(err));
-db.once('open', () => console.log('connected DB in PHOTO seed file. Seeding Now...'));
+db.once('open', () => console.log('connected DB in CHAR seed file. Seeding Now...'));
 
 importData();
 
@@ -19,23 +18,19 @@ async function importData () {
   for (const keyCol in excelDataPhoto.dataPhoto) {
 
     // console.log("🚀 ~ file: initSeed.js:21 ~ importData ~ keyCol", keyCol)
-    const photoObj = excelDataPhoto.dataPhoto[keyCol];
-    const id = photoObj.A; // of photo
-    const review_id = photoObj.B;
-    const url = photoObj.C;
-    const key1 = "results.review_id";
-    // const key2 = "results.$[elem].photos";
-    const key2 = "results.$.photos";
-    // console.log("🚀 ~ file: initSeedPhoto.js:28 ~ importData ~ photoObj", photoObj, " review_id: ", review_id);
-    await Review.updateOne({ "results.review_id": review_id }, {
+    const charObj = excelDataPhoto.dataPhoto[keyCol];
+    const id = charObj.A; // of char
+    const product_id = charObj.B;
+    const name = charObj.C;
+    // console.log("🚀 ~ file: initSeedPhoto.js:28 ~ importData ~ charObj", charObj, " review_id: ", review_id);
+    await Review.updateOne({ product: product_id }, {
       $push: {
-        "results.$.photos": {
-          id,
-          url
-        }
+        id,
+        name,
+        value: []
       }
     })
-      .then((res) => console.log(id, 'photo Id Updated', res))
+      .then((res) => console.log(id, 'char Id Updated', res))
       .catch((err) => console.error(err));
   }
 }

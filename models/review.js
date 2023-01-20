@@ -1,5 +1,24 @@
 const mongoose = require('mongoose');
 
+// const reviewSchema = new mongoose.Schema({
+//   id: {
+//     type: Number,
+//     unique: true
+//   },
+//   product_id: Number,
+//   rating: Number,
+//   date: Date,
+//   summary: String,
+//   body: String,
+//   recommend: String,
+//   reported: String,
+//   reviewer_name: String,
+//   reviewer_email: String,
+//   response: String,
+//   helpfulness: Number
+// }
+// );
+
 const reviewSchema = new mongoose.Schema({
   product: String,
   page: Number,
@@ -25,7 +44,10 @@ const reviewSchema = new mongoose.Schema({
         default: 0
       },
       photos: [{
-        id: Number,
+        id: {
+          type: Number,
+          unique: true
+        },
         url: String
       }],
       reported: {
@@ -44,24 +66,14 @@ const reviewSchema = new mongoose.Schema({
     false: String,
     true: String
   },
-  characteristics: {
-    Size: {
-      id: Number,
-      value: String
+  characteristics: [{
+    id: {
+      type: Number,
+      unique: true
     },
-    Width: {
-      id: Number,
-      value: String
-    },
-    Comfort: {
-      id: Number,
-      value: String
-    },
-    Quality: {
-      id: Number,
-      value: String
-    }
-  }
+    name: String,
+    value: []
+  }]
 });
 
 module.exports = mongoose.model('Review', reviewSchema);

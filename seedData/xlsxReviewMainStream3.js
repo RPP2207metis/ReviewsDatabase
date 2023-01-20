@@ -5,16 +5,16 @@ const mongoose = require('mongoose');
 const Review = require('../models/review.js');
 
 mongoose.set('strictQuery', true);
-mongoose.connect('mongodb://localhost/reviews_sdc'); // REAL DATA IMPORT
+// mongoose.connect('mongodb://localhost/reviews_sdc'); // REAL DATA IMPORT
 // mongoose.connect('mongodb://localhost/test'); // TEST DB
-// mongoose.connect('mongodb://localhost/cows'); // TEST DB
+mongoose.connect('mongodb://localhost/cows'); // TEST DB
 const db = mongoose.connection;
 db.on('error', (err) => console.error(err));
 db.once('open', () => console.log('connected DB in STREAM file...'));
 
 // const fileName = "/Users/admin/Documents/SDC\ Data\ and\ Docs/reviews-30.csv";
-const fileName = "/Users/admin/Downloads/splitcsv-ca5d7231-2a3d-49d2-9b66-95d92bb74b2c-results/reviews-2.csv";
-// const fileName = "/Users/admin/Documents/SDC\ Data\ and\ Docs/reviews.csv";
+// const fileName = "/Users/admin/Downloads/splitcsv-ca5d7231-2a3d-49d2-9b66-95d92bb74b2c-results/reviews-2.csv";
+const fileName = "/Users/admin/Documents/SDC\ Data\ and\ Docs/reviews.csv";
 
 const stream = fs.createReadStream(fileName);
 const chunkSize = 100; // default 5000
@@ -100,14 +100,14 @@ async function importDataNewSave (data) { // now data is an object {productid: {
           review_id: currentObj.id,
           rating: currentObj.rating,
           summary: currentObj.summary,
-          recommend: currentObj.recommend === "TRUE",
+          recommend: currentObj.recommend === "true",
           response: currentObj.response === "null" ? null : currentObj.response,
           body: currentObj.body,
           date: currentObj.date,
           reviewer_name: currentObj.reviewer_name,
           helpfulness: currentObj.helpfulness,
           photos,
-          reported: currentObj.reported === "TRUE"
+          reported: currentObj.reported === "true"
         }
       ],
       ratings: {
@@ -118,8 +118,8 @@ async function importDataNewSave (data) { // now data is an object {productid: {
         5: currentObj.rating === '5' ? '1' : '0'
       },
       recommended: {
-        false: currentObj.recommend === "FALSE" ? '1' : '0',
-        true: currentObj.recommend === "TRUE" ? '1' : '0'
+        false: currentObj.recommend === "false" ? '1' : '0',
+        true: currentObj.recommend === "true" ? '1' : '0'
       },
       characteristics: {}
     };
@@ -177,14 +177,14 @@ async function importDataUpdateAll (data) {
                       review_id: data[i].id,
                       rating: data[i].rating,
                       summary: data[i].summary,
-                      recommend: data[i].recommend === "TRUE",
+                      recommend: data[i].recommend === "true",
                       response: data[i].response === "null" ? null : data[i].response,
                       body: data[i].body,
                       date: data[i].date,
                       reviewer_name: data[i].reviewer_name,
                       helpfulness: data[i].helpfulness,
                       photos,
-                      reported: data[i].reported === "TRUE"
+                      reported: data[i].reported === "true"
                     }
                   }
                 }
