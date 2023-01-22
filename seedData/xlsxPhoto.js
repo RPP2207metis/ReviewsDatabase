@@ -1,11 +1,13 @@
 const XLSX = require("xlsx");
-require('buffer').constants.MAX_STRING_LENGTH = Infinity;
+// require('buffer').constants.MAX_STRING_LENGTH = Infinity;
+console.log("xlsxPhoto START");
 const photoWorkBook = XLSX.readFile("/Users/admin/Documents/SDC\ Data\ and\ Docs/reviews_photos.csv");
 // const photoWorkBook = XLSX.readFile("/Users/admin/Documents/SDC\ Data\ and\ Docs/reviews_photos_test.csv");
 // const photoWorkBook = XLSX.readFile("/Users/admin/Documents/SDC\ Data\ and\ Docs/split_reviews_photos/reviews_photos-1.csv");
 const sheetNameListPhotos = photoWorkBook.SheetNames;
 
 sheetNameListPhotos.forEach((sheetNameIndividual) => {
+
   const currentSheet = photoWorkBook.Sheets[sheetNameIndividual];
   // console.log("Photos: currentSheet: ", currentSheet);
   const headersPhoto = {};
@@ -32,6 +34,6 @@ sheetNameListPhotos.forEach((sheetNameIndividual) => {
   }
   dataPhoto.shift();
   dataPhoto.shift();
-  // console.log("🚀 headersPhoto, dataPhoto: ", headersPhoto, dataPhoto);
+  console.log("🚀 headersPhoto, dataPhoto: ", headersPhoto, dataPhoto);
   module.exports = { headersPhoto, dataPhoto };
 });

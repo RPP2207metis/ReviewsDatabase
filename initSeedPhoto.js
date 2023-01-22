@@ -23,9 +23,7 @@ async function importData () {
     const id = photoObj.A; // of photo
     const review_id = photoObj.B;
     const url = photoObj.C;
-    const key1 = "results.review_id";
-    // const key2 = "results.$[elem].photos";
-    const key2 = "results.$.photos";
+
     // console.log("🚀 ~ file: initSeedPhoto.js:28 ~ importData ~ photoObj", photoObj, " review_id: ", review_id);
     await Review.updateOne({ "results.review_id": review_id }, {
       $push: {

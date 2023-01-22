@@ -1,13 +1,15 @@
 const XLSX = require("xlsx");
-require('buffer').constants.MAX_STRING_LENGTH = Infinity;
-const photoWorkBook = XLSX.readFile("/Users/admin/Documents/SDC\ Data\ and\ Docs/characteristics.csv");
-// const photoWorkBook = XLSX.readFile("/Users/admin/Documents/SDC\ Data\ and\ Docs/reviews_photos_test.csv");
-// const photoWorkBook = XLSX.readFile("/Users/admin/Documents/SDC\ Data\ and\ Docs/split_reviews_photos/reviews_photos-1.csv");
-const sheetNameListPhotos = photoWorkBook.SheetNames;
+// require('buffer').constants.MAX_STRING_LENGTH = Infinity;
+console.log("🚀");
+const charWorkBook = XLSX.readFile('/Users/admin/Documents/SDC Data and Docs/characteristics.csv');
+console.log("🚀🚀🚀🚀🚀");
+// const charWorkBook = XLSX.readFile("/Users/admin/Documents/SDC\ Data\ and\ Docs/reviews_photos_test.csv");
+// const charWorkBook = XLSX.readFile("/Users/admin/Documents/SDC\ Data\ and\ Docs/split_reviews_photos/reviews_photos-1.csv");
+const sheetNameListPhotos = charWorkBook.SheetNames;
 
 sheetNameListPhotos.forEach((sheetNameIndividual) => {
-  const currentSheet = photoWorkBook.Sheets[sheetNameIndividual];
-  // console.log("Photos: currentSheet: ", currentSheet);
+  const currentSheet = charWorkBook.Sheets[sheetNameIndividual];
+  console.log("INSIDE CHARACTER START: currentSheet: ", currentSheet);
   const headersChar = {};
   const dataChar = [];
 
@@ -19,19 +21,19 @@ sheetNameListPhotos.forEach((sheetNameIndividual) => {
     const value = currentSheet[cell].v;
 
     if (row === 1) {
-      headersPhoto[col] = value;
+      headersChar[col] = value;
       continue;
     }
 
-    if (!dataPhoto[row]) {
-      dataPhoto[row] = {};
-      dataPhoto[row][col] = value;
+    if (!dataChar[row]) {
+      dataChar[row] = {};
+      dataChar[row][col] = value;
       continue;
     }
-    dataPhoto[row][col] = (value === "null" ? null : value); // Sets value in the object and then Cleans "null"
+    dataChar[row][col] = (value === "null" ? null : value); // Sets value in the object and then Cleans "null"
   }
-  dataPhoto.shift();
-  dataPhoto.shift();
+  dataChar.shift();
+  dataChar.shift();
   console.log("🚀 headersChar, dataChar: ", headersChar, dataChar);
   module.exports = { headersChar, dataChar };
 });

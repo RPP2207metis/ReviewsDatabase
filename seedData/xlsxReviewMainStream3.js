@@ -17,7 +17,7 @@ db.once('open', () => console.log('connected DB in STREAM file...'));
 const fileName = "/Users/admin/Documents/SDC\ Data\ and\ Docs/reviews.csv";
 
 const stream = fs.createReadStream(fileName);
-const chunkSize = 100; // default 5000
+const chunkSize = 5000; // default 5000
 
 let totalRows = 0;
 let productToSaveNewData = {};
@@ -82,6 +82,7 @@ csv()
           console.log("ERROR in csv SAVING last chunk! ", err);
         });
       console.log('Stream finished');
+      process.exit(0);
     }
   });
 

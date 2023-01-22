@@ -39,15 +39,13 @@ const reviewSchema = new mongoose.Schema({
       body: String,
       date: Date,
       reviewer_name: String,
+      reviewer_email: String,
       helpfulness: {
         type: Number,
         default: 0
       },
       photos: [{
-        id: {
-          type: Number,
-          unique: true
-        },
+        id: Number,
         url: String
       }],
       reported: {
@@ -67,10 +65,7 @@ const reviewSchema = new mongoose.Schema({
     true: String
   },
   characteristics: [{
-    id: {
-      type: Number,
-      unique: true
-    },
+    id: Number,
     name: String,
     value: []
   }]
