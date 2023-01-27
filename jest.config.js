@@ -8,8 +8,8 @@ module.exports = {
   coverageDirectory: '../coverage',
   coverageThreshold: {
     global: {
-      lines: 80,
-      statements: 80
+      lines: 100,
+      statements: 100
     }
   },
   testPathIgnorePatterns: [

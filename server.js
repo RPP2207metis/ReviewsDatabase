@@ -18,6 +18,6 @@ app.use(express.json());
 
 app.use('/reviews', reviewsRouter);
 
-app.listen(process.env.PORT, () => console.log(`Server on localhost ${process.env.PORT}...`));
+app.listen(process.env.PORT, () => console.log(`Server on localhost ${process.env.PORT}...`)); // Comment out for Jest
 
-// module.exports = db;
+module.exports = app;

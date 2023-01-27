@@ -9,6 +9,17 @@ const Counter = require('../models/counter.js');
 const request = require('supertest');
 const app = require('../server.js');
 const reviewsRouter = require('../routes/reviews.js');
+const postReview = {
+  product_id: 71705,
+  rating: 5,
+  summary: 'testing',
+  body: "They are very dark. But that's good because I'm in very sunny spots",
+  recommend: true,
+  name: 'test',
+  email: 'test@test.com',
+  photos: ['http://res.cloudinary.com/djfpzruso/image/upload/v1673118844/r63e0zgpunosamkw2nap.jpg'],
+  characteristics: { '240611': 3, '240612': 1, '240613': 3, '240614': 3 }
+}
 const ReviewData = {
   "product": "2",
   "page": 0,
@@ -66,26 +77,36 @@ const ReviewData = {
 };
 
 describe('Test the root path', () => {
-  test('It should response the GET method', async (done) => {
-    const response = await request(app).get('/reviews');
+  test('It should respond with 200 for the GET request', async () => {
+    const response = await request(app).get('/reviews').query({ product_id: '1' });
     expect(response.statusCode).toBe(200);
-    done();
   });
 });
 
-describe('Test the mongodb connection', (done) => {
-  test('It should connect to the database', async () => {
-    const response = await request(app).get('/reviews');
-    expect(response.statusCode).toBe(200);
-    expect(response.text).toBe('Connection to Database Established!');
-    done();
-  });
-});
-
-describe('Test the reviews router', (done) => {
-  test('It should response the GET method', async () => {
+describe('Test the meta route', () => {
+  test('It should respond with 200 for the META GET request', async () => {
     const response = await request(app).get('/reviews/meta?product_id=1');
     expect(response.statusCode).toBe(200);
-    done();
+  });
+});
+
+describe('Test the POST Review route', () => {
+  test('It should respond with 201 for the POST request', async () => {
+    const response = await request(app).post('/reviews').send(postReview);
+    expect(response.statusCode).toBe(201);
+  });
+});
+
+describe('Test the PUT Helpful route', () => {
+  test('It should respond with 204 for the Helpful PUT request', async () => {
+    const response = await request(app).put(`/reviews/${1}/helpful`);
+    expect(response.statusCode).toBe(204);
+  });
+});
+
+describe('Test the PUT Reported route', () => {
+  test('It should respond with 204 for the Reported PUT request', async () => {
+    const response = await request(app).put(`/reviews/${1}/report`);
+    expect(response.statusCode).toBe(204);
   });
 });
