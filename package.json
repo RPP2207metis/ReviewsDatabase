@@ -6,7 +6,10 @@
   "scripts": {
     "test": "jest",
     "coverage": "npm run test -- --coverage",
-    "server-dev": "nodemon server.js"
+    "server-dev": "nodemon server.js",
+    "testReviewsK6": "k6 run script.js",
+    "newRelicServerStart": "node -r newrelic server.js",
+    "k6-30": "k6 run --vus 10 --duration 30s script.js"
   },
   "repository": {
     "type": "git",
@@ -25,6 +28,7 @@
     "jest": "^29.3.1",
     "mongodb": "^4.13.0",
     "mongoose": "^6.8.3",
+    "newrelic": "^9.8.1",
     "xlsx": "^0.18.5",
     "xlsx-stream-reader": "^1.1.1"
   },

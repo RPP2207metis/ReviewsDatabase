@@ -5,9 +5,11 @@ const Counter = require('../models/counter.js');
 
 // GET Review Data
 router.get('/', async (req, res) => {
-  console.log("🚀 router.get ~ req.query.product_id: ", req.query.product_id);
+  // console.log("main router.get ~ req.query.product_id: ", req.query.product_id);
   try {
-    const reviews = await Review.findOne({ product: req.query.product_id }).select({ _id: 0, "results._id": 0 });
+    const reviews = await Review.findOne({ product: req.query.product_id });
+    // const reviews = await Review.findOne({ product: req.query.product_id }).select({ _id: 0, "results._id": 0 });
+    // console.log("🚀 ~ file: reviews.js:11 ~ router.get ~ reviews", reviews);
     // Note the Review is referencing the MODEL. Like a key into the collection reviews.
     const reviewData = {
       product: reviews.product,
@@ -16,7 +18,9 @@ router.get('/', async (req, res) => {
       results: reviews.results
     };
     res.json(reviewData);
+
   } catch (err) {
+    console.log("err: ", req.query.product_id, err);
     res.status(500).json({ message: err.message });
   }
 });
@@ -24,7 +28,7 @@ router.get('/', async (req, res) => {
 // GET Review Meta Data (all in one table?)
 // router.get('/meta/:id', async (req, res) => {
 router.get('/meta', async (req, res) => {
-  console.log("🚀🚀 META GET req.query.id: ", req.query.product_id);
+  console.log("META GET req.query.id: ", req.query.product_id);
   try {
     const metaData = await Review.findOne({ product: req.query.product_id }).select("product ratings recommended characteristics").lean().then((result) => {
       result.product_id = result.product;
@@ -32,8 +36,8 @@ router.get('/meta', async (req, res) => {
       (result.characteristics).shift();
       const charArray = result.characteristics;
       const charObj = {};
-      const transformedChars = charArray.map((obj) => {
-        // const charObj = {};
+      // const transformedChars = charArray.map((obj) => {
+      charArray.map((obj) => {
         charObj[obj.name] = {
           id: obj.id,
           value: ((((obj.value).reduce((acc, currentObj) => {
@@ -42,7 +46,6 @@ router.get('/meta', async (req, res) => {
         };
         return charObj;
       });
-      // result.characteristics = transformedChars;
       result.characteristics = charObj;
       delete result._id;
       return result;
@@ -56,54 +59,47 @@ router.get('/meta', async (req, res) => {
 
 // POST
 router.post('/', async (req, res) => {
-  console.log("🚀 ~ file: reviews.js:44 ~ router.post ~ req", req.body);
+  // console.log("reviews.js:59 ~ router.post ~ req", req.body);
   const submitted = req.body;
   try {
-    // const posted = Review.updateOne({ product: submitted.product_id }, { $push: { rating: submitted.rating, summary: submitted.summary, body: submitted.body, recommend: submitted.recommend, name: submitted.name, email: submitted.email } });
-    await Review.findOne({ product: submitted.product_id })
+
+    const newMaxReviewId = await Counter.findOneAndUpdate({ _id: 'review_id' }, { $inc: { count: 1 } }, { new: true })
+
+    // await Review.findOne({ product: submitted.product_id })
+    Review.findOne({ product: submitted.product_id })
       .then(async (result) => {
-
-        // const newMaxReviewId = await Review.aggregate([
-        //   {
-        //     $group: { _id: { $max: "$results.review_id" }, maxReviewId: { $max: "$results.review_id" } }
-        //   }
-        // ])
-        //   .then((res) => {
-        //     // console.log("🚀 ~ file: reviews.js:112 ~ .then ~ res", res);
-        //     return res[res.length - 1]._id + 1;
-        //   });
-
-        const newMaxReviewId = await Counter.findOneAndUpdate({ _id: 'review_id' }, { $inc: { count: 1 } }, {new: true})
-          .then(res => {
-            return res.count;
-          });
-
+        // const newMaxReviewId = await Counter.findOneAndUpdate({ _id: 'review_id' }, { $inc: { count: 1 } }, { new: true })
+          // .then(res => {
+          //   return res.count;
+          // });
         const newRating = parseInt(result.ratings[submitted.rating]) + 1;
         const newRatingKey = 'ratings.' + submitted.rating;
         const newRec = parseInt(result.recommended[submitted.recommend]) + 1; // interesting I don't need it to be a string?
         const newRecKey = 'recommended.' + submitted.recommend;
-        // console.log("newRating", newRating, newRatingKey);
 
         const photoTransform = (submitted.photos).map((photo) => {
           return {
-            id: newMaxReviewId, // might need unique counter or null
+            id: newMaxReviewId.count, // reused
             url: photo
           };
         });
+
         for (const charId in submitted.characteristics) {
-          await Review.updateOne({ "characteristics.id": charId }, {
+          // await Review.updateOne({ "characteristics.id": charId }, {
+          Review.updateOne({ "characteristics.id": charId }, {
             $push: {
               "characteristics.$.value": {
-                id: newMaxReviewId, // might need unique counter or null
+                id: newMaxReviewId.count, // reused
                 value: (submitted.characteristics[charId]).toString()
               }
             }
           })
-            .then((res) => console.log(charId, 'char ID Updated', res))
+            // .then((res) => console.log(charId, 'char ID Updated', res))
             .catch((err) => console.error(err));
         }
 
-        await Review.updateOne({ product: submitted.product_id }, {
+        // await Review.updateOne({ product: submitted.product_id }, {
+        Review.updateOne({ product: submitted.product_id }, {
           $set: {
             [newRatingKey]: newRating,
             [newRecKey]: newRec
@@ -114,7 +110,7 @@ router.post('/', async (req, res) => {
           $push:
             {
               results: {
-                review_id: newMaxReviewId,
+                review_id: newMaxReviewId.count,
                 rating: submitted.rating,
                 summary: submitted.summary,
                 recommend: submitted.recommend,
@@ -130,10 +126,12 @@ router.post('/', async (req, res) => {
             }
         })
           .then((updated) => {
+            // console.log("~ POSTED: ", updated);
             res.status(201).send(updated);
           });
       });
   } catch (err) {
+    // console.log("🚀 ~ err", err);
     res.status(500).json({ message: err.message });
   }
 });
@@ -142,14 +140,15 @@ router.post('/', async (req, res) => {
 
 router.put("/:reviewid/helpful", async (req, res) => {
   const review_id = req.params.reviewid;
-  console.log("🚀 ~ file: reviews.js:144 ~ router.put help ~ review_id", review_id)
-  await Review.updateOne({ "results.review_id": review_id }, {
+  // console.log("put helpful ~ review_id", review_id)
+  // await Review.updateOne({ "results.review_id": review_id }, {
+  Review.updateOne({ "results.review_id": review_id }, {
     $inc: {
       "results.$.helpfulness": 1
     }
   })
     .then((result) => {
-      console.log(review_id, 'helpfulness Updated', result);
+      // console.log(review_id, 'helpfulness Updated', result);
       res.status(204).send();
     })
     .catch((err) => console.error(err));
@@ -160,15 +159,15 @@ router.put("/:reviewid/helpful", async (req, res) => {
 
 router.put("/:reviewid/report", async (req, res) => {
   const review_id = req.params.reviewid;
-  console.log("🚀 ~ file: reviews.js:162 ~ router.put REPORT~ review_id", review_id)
-
-  await Review.updateOne({ "results.review_id": review_id }, {
+  // console.log("put REPORT~ review_id", review_id)
+  // await Review.updateOne({ "results.review_id": review_id }, {
+  Review.updateOne({ "results.review_id": review_id }, {
     $set: {
       "results.$.reported": true
     }
   })
     .then((result) => {
-      console.log(review_id, 'reported Updated', result);
+      // console.log(review_id, 'reported Updated', result);
       res.status(204).send();
     })
     .catch((err) => console.error(err));

@@ -2,10 +2,9 @@ require('buffer').constants.MAX_STRING_LENGTH = Infinity;
 const mongoose = require('mongoose');
 const Counter = require('./models/counter.js');
 
-// console.log("🚀 ~ file: initSeed.js:5 ~ excelDataPhoto", excelDataPhoto.headersPhoto, excelDataPhoto.dataPhoto);
-
 mongoose.set('strictQuery', true);
-mongoose.connect('mongodb://localhost/cows');
+// mongoose.connect('mongodb://localhost/cows');
+mongoose.connect('mongodb://localhost/fetcher');
 const db = mongoose.connection;
 db.on('error', (err) => console.error(err));
 db.once('open', () => console.log('connected DB in INDEX seed file...'));
